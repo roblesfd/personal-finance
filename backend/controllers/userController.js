@@ -1,7 +1,5 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
-// const { emailConfirmacion } = require("../middleware/emailSender");
 
 // @desc Crea un usuario
 // @route POST /usuarios
@@ -20,20 +18,13 @@ const createUser = async (req, res) => {
         message: "Ya existe una cuenta con esta dirección de correo",
       });
     }
-    // const token = crypto.randomBytes(20).toString("hex");
     const userObject = new User({
       name,
       email,
       password,
     });
     const user = await userObject.save();
-    // if (user) {
-    //   emailConfirmacion({
-    //     name: name,
-    //     email: email,
-    //     token: token,
-    //   });
-    // }
+
     res.status(201).json(user);
   } catch (error) {
     res.status(400).json({ error: error.message });

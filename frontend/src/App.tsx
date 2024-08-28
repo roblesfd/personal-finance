@@ -1,35 +1,27 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { Route, Routes } from "react-router-dom";
+import MainLayout from "./components/MainLayout";
+import Home from "./views/Home";
+import Login from "./features/auth/Login";
+import Signup from "./features/auth/Signup";
+import Profile from "./features/profile/Profile";
+import NotFound from "./components/404";
+import PersistLogin from "./features/auth/PersistLogin";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+function App(): React.ReactElement {
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Routes>
+      <Route element={<PersistLogin />}>
+        <Route path="/" element={<MainLayout />}>
+          <Route path="/inicio" element={<Home />} />
+          <Route path="/perfil" element={<Profile />} />
+        </Route>
+      </Route>
+
+      <Route path="/ingresar" element={<Login />} />
+      <Route path="/registrarse" element={<Signup />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
 }
 
-export default App
+export default App;

@@ -8,13 +8,15 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const corsOptions = require("./config/corsOptions");
 const cookieParser = require("cookie-parser");
-// const errorHandler = require
+const { logger, logEvents } = require("./middleware/logger");
+const errorHandler = require("./middleware/errorHandler");
 
 /**
  * TODO
  * conexion db x
  * evenbtos db x
  * loggers
+ *  - logger requests
  * rutas
  * control cors x
  * limite de archivos de subida x
@@ -34,8 +36,10 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "6mb", extended: true }));
 app.use("/", express.static(path.join(__dirname, "public")));
+app.use(logger);
 
 // Rutas
+app.use("/auth", require("./routes/authRoutes"));
 app.use("/usuarios", require("./routes/userRoutes"));
 app.use("/ingresos", require("./routes/incomeRoutes"));
 app.use("/gastos", require("./routes/expenseRoutes"));
@@ -48,6 +52,8 @@ app.all("*", (req, res) => {
   }
 });
 
+app.use(errorHandler);
+
 mongoose.connection.on("open", () => {
   console.log("Conectado a MongoDB");
   app.listen(PORT, () => {
@@ -57,4 +63,8 @@ mongoose.connection.on("open", () => {
 
 mongoose.connection.on("error", (err) => {
   console.log(err);
+  logEvents(
+    `${err.type}: ${err.code}\t${err.syscall}\t${err.hostname}`,
+    "mongoErrLog.log"
+  );
 });
